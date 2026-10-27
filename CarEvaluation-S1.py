@@ -84,3 +84,20 @@ print("\nDataset sizes:")
 print(f"Development: {len(development_cars)}")
 print(f"Validation: {len(validation_cars)}")
 print(f"Test: {len(test_cars)}")
+
+#Adding Rules into the dataset
+
+#Rule 1 Predict car acceptability based on safety rating
+def predict_car(safety, persons):
+    if safety == "low":
+        return "unacc"
+    
+    if persons == "2":
+        return "unacc"
+    
+    return "Undecided"
+
+print("\nDevelopment Examples: ")
+
+for car in development_cars[:5]:
+    print(car)
