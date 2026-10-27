@@ -48,9 +48,39 @@ with output_path.open("w", newline="", encoding="utf-8") as file:
 
 print(f"\nSaved dataset to: {output_path}")
 
-import random 
-random_generator = random.Random(42)  # Create a random number generator with a fixed seed for reproducibility
+import random
 
-development_cars=[]
-validation_cars=[]
-test_cars=[]
+# Use a fixed seed so the shuffle is repeatable.
+random_generator = random.Random(42)
+
+development_cars = []
+validation_cars = []
+test_cars = []
+
+# Collect, shuffle and split each class separately.
+for label in counts:
+    matching_cars = []
+
+    for car in cars:
+        if car["class"] == label:
+            matching_cars.append(car)
+
+    random_generator.shuffle(matching_cars)
+
+    # Calculate the split boundaries for this class.
+    development_size = int(len(matching_cars) * 0.6)
+    validation_size = int(len(matching_cars) * 0.2)
+    validation_end = development_size + validation_size
+
+    # Add this class's records to the three lists.
+    development_cars.extend(matching_cars[:development_size])
+    validation_cars.extend(
+        matching_cars[development_size:validation_end]
+    )
+    test_cars.extend(matching_cars[validation_end:])
+
+# Display totals after all four classes have been processed.
+print("\nDataset sizes:")
+print(f"Development: {len(development_cars)}")
+print(f"Validation: {len(validation_cars)}")
+print(f"Test: {len(test_cars)}")
