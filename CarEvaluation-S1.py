@@ -88,16 +88,48 @@ print(f"Test: {len(test_cars)}")
 #Adding Rules into the dataset
 
 #Rule 1 Predict car acceptability based on safety rating
-def predict_car(safety, persons):
+def predict_car(safety, persons, buying, maint, lug_boot):
     if safety == "low":
         return "unacc"
-    
+#Rule 2 Predict car acceptability based on number of persons
     if persons == "2":
         return "unacc"
     
+#Rule 3 Predict car acceptability based on buying and maintenance costs
+    if buying =="vhigh" and maint == "vhigh":
+        return "unacc"
+    
+#Rule 4 Predict car acceptability based on buying and maintenance costs  
+    if buying =="vhigh" and maint == "high":
+        return "unacc"
+    
+#Rule 5 Predict car acceptability based on buying and maintenance costs   
+    if buying =="high" and maint == "vhigh":
+        return "unacc"
+
+#Rule 6 Predict car as very good if buying and maintenance costs are low, safety is high and luggage boot is big
+    if (buying == "low" and maint == "low"
+        and safety == "high" and lug_boot == "big"):
+        return "vgood"
+    
+    
+
     return "Undecided"
 
-print("\nDevelopment Examples: ")
 
-for car in development_cars[:5]:
-    print(car)
+covered = 0
+correct = 0
+
+for car in development_cars:
+    prediction = predict_car(car["safety"], car["persons"], car["buying"], car["maint"], car["lug_boot"])
+    
+    if prediction != "Undecided":
+        covered += 1
+        if prediction == car["class"]:
+            correct += 1
+            
+print (f"\nDevelopment Records: {len(development_cars)}")
+print (f"Records Classified: {covered}")
+print (f"Correct Classifications: {correct}")
+print (f"Records still undecided: {len(development_cars) - covered}")
+
