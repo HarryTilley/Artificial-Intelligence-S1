@@ -111,10 +111,21 @@ def predict_car(safety, persons, buying, maint, lug_boot):
     if (buying == "low" and maint == "low"
         and safety == "high" and lug_boot == "big"):
         return "vgood"
+#Rule 7 Predict car as very good if buying is low, maintenance is medium, safety is high and luggage boot is big
+    if (buying == "low" and maint == "med" and 
+        safety == "high" and lug_boot == "big"):
+        return "vgood"
     
-    
+#Rule 8 Predict car as good if buying and maintenance costs are low, safety is medium and luggage boot is big
+    if (buying == "low" and maint == "low"
+        and safety == "med" and lug_boot == "big"):
+        return "good"
+#Rule 9 Predict car as acceptable with high buying costs and low maintenance costs, high safety and big luggage boot
+    if (buying == "high" and maint == "low" and 
+        safety == "high" and lug_boot == "big"):
+        return "acc"
 
-    return "Undecided"
+    return "acc"
 
 
 covered = 0
