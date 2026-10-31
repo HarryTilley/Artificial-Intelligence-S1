@@ -124,7 +124,7 @@ def predict_car(safety, persons, buying, maint, lug_boot):
     if (buying == "high" and maint == "low" and 
         safety == "high" and lug_boot == "big"):
         return "acc"
-
+#Rule 10 Predict acceptable if no earlier rules match
     return "acc"
 
 
@@ -143,4 +143,22 @@ print (f"\nDevelopment Records: {len(development_cars)}")
 print (f"Records Classified: {covered}")
 print (f"Correct Classifications: {correct}")
 print (f"Records still undecided: {len(development_cars) - covered}")
+
+validation_correct = 0
+
+for car in validation_cars:
+    prediction = predict_car(car["safety"], 
+                             car["persons"], 
+                             car["buying"], 
+                             car["maint"], 
+                             car["lug_boot"])
+    
+    if prediction == car["class"]:
+        validation_correct += 1
+        
+validation_accuracy = validation_correct / len(validation_cars) * 100
+
+print(f"\nValidation Records: {len(validation_cars)}")
+print(f"Correct Classifications: {validation_correct}")
+print(f"Validation Accuracy: {validation_accuracy:.1f}%")
 
