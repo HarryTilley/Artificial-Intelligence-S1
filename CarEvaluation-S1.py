@@ -107,24 +107,26 @@ def predict_car(safety, persons, buying, maint, lug_boot):
     if buying =="high" and maint == "vhigh":
         return "unacc"
 
-#Rule 6 Predict car as very good if buying and maintenance costs are low, safety is high and luggage boot is big
-    if (buying == "low" and maint == "low"
-        and safety == "high" and lug_boot == "big"):
-        return "vgood"
-#Rule 7 Predict car as very good if buying is low, maintenance is medium, safety is high and luggage boot is big
-    if (buying == "low" and maint == "med" and 
-        safety == "high" and lug_boot == "big"):
-        return "vgood"
+#Rule 6 Predict very good when safety is high, luggage boot is big, buying and maintenance costs meet these conditions
+    if safety == "high" and lug_boot == "big":
+        if buying == "low" and (maint == "low" or maint == "med"):
+            return "vgood"
+        
+        if buying == "med" and maint =="low":
+            return "vgood"
     
-#Rule 8 Predict car as good if buying and maintenance costs are low, safety is medium and luggage boot is big
+#Rule 7 Predict car as good if buying and maintenance costs are low, safety is medium and luggage boot is big
     if (buying == "low" and maint == "low"
         and safety == "med" and lug_boot == "big"):
         return "good"
-#Rule 9 Predict car as acceptable with high buying costs and low maintenance costs, high safety and big luggage boot
-    if (buying == "high" and maint == "low" and 
-        safety == "high" and lug_boot == "big"):
-        return "acc"
-#Rule 10 Predict acceptable if no earlier rules match
+    
+#Rule 8 Predict good with low buying cost, low or medium maintenance, medium safety and big luggage boot
+    if (buying == "low"
+        and (maint == "low" or maint == "med")
+        and safety == "med"
+        and lug_boot == "big"):
+        return "good"
+#Rule 9 Predict acceptable if no earlier rules match
     return "acc"
 
 
@@ -162,3 +164,55 @@ print(f"\nValidation Records: {len(validation_cars)}")
 print(f"Correct Classifications: {validation_correct}")
 print(f"Validation Accuracy: {validation_accuracy:.1f}%")
 
+labels = ["unacc", "acc", "good", "vgood"]
+
+print ("\nValidation results by class:")
+for label in labels:
+    class_total= 0
+    class_correct = 0
+    for car in validation_cars:
+        if car["class"] == label:
+            class_total += 1
+            prediction = predict_car(car["safety"], 
+                                     car["persons"], 
+                                     car["buying"], 
+                                     car["maint"], 
+                                     car["lug_boot"])
+            if prediction == label:
+                class_correct += 1
+    print(f"{label}: {class_correct} correctly identified "
+          f"out of {class_total}")
+    
+baseline_correct = 0
+
+for car in validation_cars:
+    if car["class"] == "unacc":
+        baseline_correct += 1
+        
+baseline_accuracy = baseline_correct / len(validation_cars) * 100
+print (f"\nBaseline Accuracy: {baseline_accuracy:.1f}%")
+
+test_correct = 0
+
+for car in test_cars: 
+    prediction = predict_car(car["safety"], 
+                             car["persons"], 
+                             car["buying"], 
+                             car["maint"], 
+                             car["lug_boot"])
+    
+    if prediction == car["class"]:
+        test_correct += 1
+test_accuracy = test_correct / len(test_cars) * 100
+
+print(f"\nTest Records: {len(test_cars)}")
+print(f"Correct Classifications: {test_correct}")
+print(f"Test Accuracy: {test_accuracy:.1f}%")
+
+test_baseline_correct = 0
+
+for cars in test_cars:
+    if cars["class"] == "unacc":
+        test_baseline_correct += 1
+test_baseline_accuracy = test_baseline_correct / len(test_cars) * 100
+print (f"\nTest Baseline Accuracy: {test_baseline_accuracy:.1f}%")
