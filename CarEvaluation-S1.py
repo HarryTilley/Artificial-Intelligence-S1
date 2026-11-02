@@ -1,6 +1,7 @@
 import csv
 from collections import Counter
 from pathlib import Path
+import random
 
 # The original dataset has no headings, so define its column names.
 columns = [
@@ -24,31 +25,12 @@ with data_path.open(newline="", encoding="utf-8") as file:
 # Display the total number of records.
 print(f"Total cars: {len(cars)}")
 
-# Display the first three records to check that the data loaded.
-print("\nFirst three records:")
-for car in cars[:3]:
-    print(car)
-
 # Count how many records belong to each acceptability class.
 counts = Counter(car["class"] for car in cars)
 
 print("\nClass counts:")
 for label, count in counts.items():
     print(f"{label}: {count}")
-
-# Set the location of the CSV file that can be opened in Excel.
-output_path = Path(__file__).parent / "car_evaluation.csv"
-
-# Export the column headings and all records.
-# Using "w" replaces the exported file if it already exists.
-with output_path.open("w", newline="", encoding="utf-8") as file:
-    writer = csv.DictWriter(file, fieldnames=columns)
-    writer.writeheader()
-    writer.writerows(cars)
-
-print(f"\nSaved dataset to: {output_path}")
-
-import random
 
 # Use a fixed seed so the shuffle is repeatable.
 random_generator = random.Random(42)
@@ -85,7 +67,7 @@ print(f"Development: {len(development_cars)}")
 print(f"Validation: {len(validation_cars)}")
 print(f"Test: {len(test_cars)}")
 
-#Adding Rules into the dataset
+#Classify Cars using ordered rules
 
 #Rule 1 Predict car acceptability based on safety rating
 def predict_car(safety, persons, buying, maint, lug_boot):
@@ -115,39 +97,29 @@ def predict_car(safety, persons, buying, maint, lug_boot):
         if buying == "med" and maint =="low":
             return "vgood"
     
-#Rule 7 Predict car as good if buying and maintenance costs are low, safety is medium and luggage boot is big
-    if (buying == "low" and maint == "low"
-        and safety == "med" and lug_boot == "big"):
-        return "good"
-    
-#Rule 8 Predict good with low buying cost, low or medium maintenance, medium safety and big luggage boot
+#Rule 7 Predict good with low buying cost, low or medium maintenance, medium safety and big luggage boot
     if (buying == "low"
         and (maint == "low" or maint == "med")
         and safety == "med"
         and lug_boot == "big"):
         return "good"
-#Rule 9 Predict acceptable if no earlier rules match
+#Rule 8 Predict acceptable if no earlier rules match
     return "acc"
 
-
-covered = 0
 correct = 0
-
 for car in development_cars:
-    prediction = predict_car(car["safety"], car["persons"], car["buying"], car["maint"], car["lug_boot"])
+    prediction = predict_car(car["safety"], 
+                             car["persons"], 
+                             car["buying"], 
+                             car["maint"], 
+                             car["lug_boot"])
     
-    if prediction != "Undecided":
-        covered += 1
-        if prediction == car["class"]:
-            correct += 1
-            
-print (f"\nDevelopment Records: {len(development_cars)}")
-print (f"Records Classified: {covered}")
-print (f"Correct Classifications: {correct}")
-print (f"Records still undecided: {len(development_cars) - covered}")
+    if prediction == car["class"]:
+        correct += 1
+print(f"\nDevelopment Records: {len(development_cars)}")
+print(f"Correct Classifications: {correct}")
 
 validation_correct = 0
-
 for car in validation_cars:
     prediction = predict_car(car["safety"], 
                              car["persons"], 
@@ -211,8 +183,8 @@ print(f"Test Accuracy: {test_accuracy:.1f}%")
 
 test_baseline_correct = 0
 
-for cars in test_cars:
-    if cars["class"] == "unacc":
+for car in test_cars:
+    if car["class"] == "unacc":
         test_baseline_correct += 1
 test_baseline_accuracy = test_baseline_correct / len(test_cars) * 100
 print (f"\nTest Baseline Accuracy: {test_baseline_accuracy:.1f}%")
