@@ -75,7 +75,7 @@ def predict_car(safety, persons, buying, maint, lug_boot):
         return "unacc"
 #Rule 2 Predict car acceptability based on number of persons
     if persons == "2":
-        return "unacc"
+        return "unacc"      
     
 #Rule 3 Predict car acceptability based on buying and maintenance costs
     if buying =="vhigh" and maint == "vhigh":
